@@ -33,7 +33,7 @@ public class SalePointController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<SalePointDTO> getAllSalePoints() {
-        return salePointService.getAllSalePoints();
+        return salePointService.getAllSalePointDTOs();
     }
 
     @GetMapping("/{id}")

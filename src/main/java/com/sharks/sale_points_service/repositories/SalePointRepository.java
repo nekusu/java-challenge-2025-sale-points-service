@@ -6,5 +6,5 @@ import com.sharks.sale_points_service.models.SalePoint;
 
 public interface SalePointRepository extends JpaRepository<SalePoint, Long> {
 
-    boolean existsByName(String name);
+    Boolean existsByName(String name);
 }

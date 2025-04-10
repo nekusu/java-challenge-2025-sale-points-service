@@ -22,7 +22,7 @@ public class SalePointServiceImpl implements SalePointService {
     }
 
     @Override
-    public List<SalePointDTO> getAllSalePoints() {
+    public List<SalePointDTO> getAllSalePointDTOs() {
         return salePointRepository.findAll().stream().map(SalePointDTO::new).toList();
     }
 

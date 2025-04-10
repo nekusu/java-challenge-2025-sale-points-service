@@ -8,7 +8,7 @@ import com.sharks.sale_points_service.models.dtos.SalePointDTO;
 
 public interface SalePointService {
 
-    List<SalePointDTO> getAllSalePoints();
+    List<SalePointDTO> getAllSalePointDTOs();
 
     SalePoint getSalePointById(Long id);
 
