@@ -2,6 +2,9 @@ package com.sharks.sale_points_service.services.impl;
 
 import java.util.List;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.sharks.sale_points_service.exceptions.NameAlreadyExistsException;
@@ -27,16 +30,19 @@ public class SalePointServiceImpl implements SalePointService {
     }
 
     @Override
+    @Cacheable(value = "salePoints", key = "#id")
     public SalePoint getSalePointById(Long id) {
         return salePointRepository.findById(id).orElseThrow(() -> new SalePointNotFoundException(id));
     }
 
     @Override
+    @Cacheable(value = "salePoints", key = "#id")
     public SalePointDTO getSalePointDTOById(Long id) {
         return new SalePointDTO(getSalePointById(id));
     }
 
     @Override
+    @CachePut(value = "salePoints", key = "#result.id")
     public SalePointDTO createSalePoint(NewSalePoint newSalePoint) {
         validateSalePoint(newSalePoint);
         SalePoint salePoint = new SalePoint(newSalePoint.name());
@@ -45,6 +51,7 @@ public class SalePointServiceImpl implements SalePointService {
     }
 
     @Override
+    @CachePut(value = "salePoints", key = "#id")
     public SalePointDTO updateSalePoint(Long id, NewSalePoint newSalePoint) {
         SalePoint existingSalePoint = getSalePointById(id);
         existingSalePoint.setName(newSalePoint.name());
@@ -53,6 +60,7 @@ public class SalePointServiceImpl implements SalePointService {
     }
 
     @Override
+    @CacheEvict(value = "salePoints", key = "#id")
     public void deleteSalePoint(Long id) {
         SalePoint existingSalePoint = getSalePointById(id);
         salePointRepository.delete(existingSalePoint);

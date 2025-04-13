@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.sharks.sale_points_service.exceptions.PathAlreadyExistsException;
@@ -43,6 +46,7 @@ public class PathServiceImpl implements PathService {
     }
 
     @Override
+    @Cacheable(value = "paths", key = "#idA + '-' + #idB")
     public Path getPathByIds(Long idA, Long idB) {
         return pathRepository.findBySalePointA_IdAndSalePointB_Id(idA, idB)
                 .or(() -> pathRepository.findBySalePointA_IdAndSalePointB_Id(idB, idA))
@@ -50,6 +54,7 @@ public class PathServiceImpl implements PathService {
     }
 
     @Override
+    @Cacheable(value = "paths", key = "#id")
     public List<Path> getPathsById(Long id) {
         HashSet<Path> paths = new HashSet<>();
         paths.addAll(pathRepository.findBySalePointA_Id(id));
@@ -58,16 +63,20 @@ public class PathServiceImpl implements PathService {
     }
 
     @Override
+    @Cacheable(value = "paths", key = "#idA + '-' + #idB")
     public PathDTO getPathDTOByIds(Long idA, Long idB) {
         return new PathDTO(getPathByIds(idA, idB));
     }
 
     @Override
+    @Cacheable(value = "paths", key = "#id")
     public List<PathDTO> getPathDTOsById(Long id) {
         return getPathsById(id).stream().map(PathDTO::new).toList();
     }
 
     @Override
+    @CachePut(value = "paths", key = "#newPath.idA + '-' + #newPath.idB")
+    @CacheEvict(value = "pathCost", allEntries = true)
     public PathDTO createPath(NewPath newPath) {
         validatePath(newPath);
         SalePoint salePointA = salePointService.getSalePointById(newPath.idA());
@@ -78,6 +87,8 @@ public class PathServiceImpl implements PathService {
     }
 
     @Override
+    @CachePut(value = "paths", key = "#idA + '-' + #idB")
+    @CacheEvict(value = "pathCost", allEntries = true)
     public PathDTO updatePath(Long idA, Long idB, NewPathWithoutIds newPath) {
         Path existingPath = getPathByIds(idA, idB);
         existingPath.setCost(newPath.cost());
@@ -86,12 +97,15 @@ public class PathServiceImpl implements PathService {
     }
 
     @Override
+    @CachePut(value = "paths", key = "#idA + '-' + #idB")
+    @CacheEvict(value = "pathCost", allEntries = true)
     public void deletePath(Long idA, Long idB) {
         Path existingPath = getPathByIds(idA, idB);
         pathRepository.delete(existingPath);
     }
 
     @Override
+    @Cacheable(value = "pathCost", key = "#startId + '-' + #endId")
     public PathCost findCheapestPath(Long startId, Long endId) {
         PriorityQueue<SalePointCost> queue = new PriorityQueue<>();
         Map<Long, List<SalePointCost>> graph = new HashMap<>();
