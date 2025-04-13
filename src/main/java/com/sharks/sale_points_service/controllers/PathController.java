@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sharks.sale_points_service.models.dtos.PathDTO;
+import com.sharks.sale_points_service.models.PathCost;
 import com.sharks.sale_points_service.models.dtos.NewPath;
 import com.sharks.sale_points_service.models.dtos.NewPathWithoutIds;
 import com.sharks.sale_points_service.services.PathService;
@@ -46,6 +47,12 @@ public class PathController {
     @ResponseStatus(HttpStatus.OK)
     public PathDTO getPathByIds(@PathVariable Long idA, @PathVariable Long idB) {
         return pathService.getPathDTOByIds(idA, idB);
+    }
+
+    @GetMapping("/{idA}/{idB}/cost")
+    @ResponseStatus(HttpStatus.OK)
+    public PathCost getPathCost(@PathVariable Long idA, @PathVariable Long idB) {
+        return pathService.findCheapestPath(idA, idB);
     }
 
     @PostMapping
