@@ -30,7 +30,6 @@ public class SalePointServiceImpl implements SalePointService {
     }
 
     @Override
-    @Cacheable(value = "salePoints", key = "#id")
     public SalePoint getSalePointById(Long id) {
         return salePointRepository.findById(id).orElseThrow(() -> new SalePointNotFoundException(id));
     }

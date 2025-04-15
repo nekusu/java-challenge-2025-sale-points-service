@@ -46,7 +46,6 @@ public class PathServiceImpl implements PathService {
     }
 
     @Override
-    @Cacheable(value = "paths", key = "#idA + '-' + #idB")
     public Path getPathByIds(Long idA, Long idB) {
         return pathRepository.findBySalePointA_IdAndSalePointB_Id(idA, idB)
                 .or(() -> pathRepository.findBySalePointA_IdAndSalePointB_Id(idB, idA))
@@ -54,7 +53,6 @@ public class PathServiceImpl implements PathService {
     }
 
     @Override
-    @Cacheable(value = "paths", key = "#id")
     public List<Path> getPathsById(Long id) {
         HashSet<Path> paths = new HashSet<>();
         paths.addAll(pathRepository.findBySalePointA_Id(id));
