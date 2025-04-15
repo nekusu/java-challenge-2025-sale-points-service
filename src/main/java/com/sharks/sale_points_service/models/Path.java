@@ -27,12 +27,12 @@ public class Path {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "idA", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "id_a", referencedColumnName = "id", nullable = false)
     private SalePoint salePointA;
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "idB", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "id_b", referencedColumnName = "id", nullable = false)
     private SalePoint salePointB;
 
     @Setter
