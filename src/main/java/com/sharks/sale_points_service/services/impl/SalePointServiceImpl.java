@@ -52,6 +52,7 @@ public class SalePointServiceImpl implements SalePointService {
     @Override
     @CachePut(value = "salePoints", key = "#id")
     public SalePointDTO updateSalePoint(Long id, NewSalePoint newSalePoint) {
+        validateSalePoint(newSalePoint);
         SalePoint existingSalePoint = getSalePointById(id);
         existingSalePoint.setName(newSalePoint.name());
         SalePoint updatedSalePoint = salePointRepository.save(existingSalePoint);

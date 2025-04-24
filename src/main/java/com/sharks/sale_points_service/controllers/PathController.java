@@ -91,7 +91,8 @@ public class PathController {
 
     @Operation(summary = "Create a new path", description = "Creates a new path between sale points with the provided details.", requestBody = @RequestBody(description = "Path data to create", required = true, content = @Content(mediaType = "application/json", schema = @Schema(implementation = NewPath.class))), responses = {
             @ApiResponse(responseCode = "201", description = "Path created successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PathDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input data")
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "409", description = "Conflict")
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -104,8 +105,8 @@ public class PathController {
             @Parameter(name = "idB", description = "ID of the second sale point", required = true, example = "2")
     }, requestBody = @RequestBody(description = "Updated path data", required = true, content = @Content(mediaType = "application/json", schema = @Schema(implementation = NewPathWithoutIds.class))), responses = {
             @ApiResponse(responseCode = "200", description = "Path updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = PathDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Path not found"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data")
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Path not found")
     })
     @PutMapping("/{idA}/{idB}")
     @ResponseStatus(HttpStatus.OK)

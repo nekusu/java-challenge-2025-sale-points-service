@@ -64,7 +64,8 @@ public class SalePointController {
 
     @Operation(summary = "Create a new sale point", description = "Creates a new sale point with the provided details.", requestBody = @RequestBody(description = "Sale point data to create", required = true, content = @Content(mediaType = "application/json", schema = @Schema(implementation = NewSalePoint.class))), responses = {
             @ApiResponse(responseCode = "201", description = "Sale point created successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SalePointDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Invalid input data")
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "409", description = "Conflict")
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -77,8 +78,9 @@ public class SalePointController {
             @Parameter(name = "id", description = "ID of the sale point to update", required = true, example = "1")
     }, requestBody = @RequestBody(description = "Updated sale point data", required = true, content = @Content(mediaType = "application/json", schema = @Schema(implementation = NewSalePoint.class))), responses = {
             @ApiResponse(responseCode = "200", description = "Sale point updated successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = SalePointDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
             @ApiResponse(responseCode = "404", description = "Sale point not found"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data")
+            @ApiResponse(responseCode = "409", description = "Conflict")
     })
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
