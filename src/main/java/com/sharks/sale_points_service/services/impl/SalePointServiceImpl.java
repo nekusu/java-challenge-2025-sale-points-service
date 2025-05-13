@@ -67,7 +67,7 @@ public class SalePointServiceImpl implements SalePointService {
     }
 
     private void validateSalePoint(NewSalePoint newSalePoint) {
-        if (salePointRepository.existsByName(newSalePoint.name()))
+        if (Boolean.TRUE.equals(salePointRepository.existsByName(newSalePoint.name())))
             throw new NameAlreadyExistsException();
     }
 }

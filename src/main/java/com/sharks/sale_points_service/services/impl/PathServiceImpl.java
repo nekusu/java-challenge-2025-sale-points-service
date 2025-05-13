@@ -126,51 +126,67 @@ public class PathServiceImpl implements PathService {
             visited.put(currentId, true);
             log.info("Visiting sale point ID {}", currentId);
 
-            if (currentId.equals(endId)) {
-                List<SalePointCost> finalPath = new ArrayList<>();
-                while (currentId != null) {
-                    Double salePointCost = costs.get(currentId) - costs.getOrDefault(previous.get(currentId), 0.0);
-                    finalPath.add(new SalePointCost(currentId, salePointNames.get(currentId), salePointCost));
-                    currentId = previous.get(currentId);
-                }
-                log.info("Final path found: {}", finalPath.reversed().stream().map(SalePointCost::getId).toList());
-                log.info("Total cost: {}", costs.get(endId));
-                return new PathCost(finalPath.reversed(), costs.get(endId));
-            }
+            if (currentId.equals(endId))
+                return buildPathCost(currentId, previous, costs, salePointNames, endId);
 
-            if (graph.get(currentId) == null) {
-                List<SalePointCost> salePointCosts = new ArrayList<>();
-                List<Path> paths = getPathsById(currentId);
-                for (Path path : paths) {
-                    SalePoint connectedSalePoint = path.getSalePointB();
-                    if (connectedSalePoint.getId() == currentId)
-                        connectedSalePoint = path.getSalePointA();
-                    Long salePointId = connectedSalePoint.getId();
-                    salePointNames.putIfAbsent(salePointId, connectedSalePoint.getName());
-                    previous.putIfAbsent(salePointId, null);
-                    visited.putIfAbsent(salePointId, false);
-                    costs.putIfAbsent(salePointId, Double.MAX_VALUE);
-                    salePointCosts.add(new SalePointCost(salePointId, path.getCost()));
-                }
-                graph.put(currentId, salePointCosts);
-                log.info("Sale points connected to ID {}: {}", currentId,
-                        salePointCosts.stream().map(SalePointCost::getId).toList());
-            }
+            if (graph.get(currentId) == null)
+                buildGraphForCurrent(graph, salePointNames, previous, visited, costs, currentId);
 
-            for (SalePointCost salePointCost : graph.get(currentId)) {
-                if (visited.get(salePointCost.getId()))
-                    continue;
-                Double newCost = current.getCost() + salePointCost.getCost();
-                if (newCost < costs.get(salePointCost.getId())) {
-                    previous.put(salePointCost.getId(), currentId);
-                    costs.put(salePointCost.getId(), newCost);
-                    queue.add(new SalePointCost(salePointCost.getId(), newCost));
-                    log.info("New cost for sale point ID {}: {}", salePointCost.getId(), newCost);
-                }
-            }
+            processNeighbors(graph, visited, costs, previous, queue, current);
         }
 
         throw new PathNotFoundException(startId, endId);
+    }
+
+    private PathCost buildPathCost(Long currentId, Map<Long, Long> previous, Map<Long, Double> costs,
+            Map<Long, String> salePointNames, Long endId) {
+        List<SalePointCost> finalPath = new ArrayList<>();
+        Long iterId = currentId;
+        while (iterId != null) {
+            Double salePointCost = costs.get(iterId) - costs.getOrDefault(previous.get(iterId), 0.0);
+            finalPath.add(new SalePointCost(iterId, salePointNames.get(iterId), salePointCost));
+            iterId = previous.get(iterId);
+        }
+        log.info("Final path found: {}", finalPath.reversed().stream().map(SalePointCost::getId).toList());
+        log.info("Total cost: {}", costs.get(endId));
+        return new PathCost(finalPath.reversed(), costs.get(endId));
+    }
+
+    private void buildGraphForCurrent(Map<Long, List<SalePointCost>> graph, Map<Long, String> salePointNames,
+            Map<Long, Long> previous, Map<Long, Boolean> visited, Map<Long, Double> costs, Long currentId) {
+        List<SalePointCost> salePointCosts = new ArrayList<>();
+        List<Path> paths = getPathsById(currentId);
+        for (Path path : paths) {
+            SalePoint connectedSalePoint = path.getSalePointB();
+            if (connectedSalePoint.getId().equals(currentId))
+                connectedSalePoint = path.getSalePointA();
+            Long salePointId = connectedSalePoint.getId();
+            salePointNames.putIfAbsent(salePointId, connectedSalePoint.getName());
+            previous.putIfAbsent(salePointId, null);
+            visited.putIfAbsent(salePointId, false);
+            costs.putIfAbsent(salePointId, Double.MAX_VALUE);
+            salePointCosts.add(new SalePointCost(salePointId, path.getCost()));
+        }
+        graph.put(currentId, salePointCosts);
+        log.info("Sale points connected to ID {}: {}", currentId,
+                salePointCosts.stream().map(SalePointCost::getId).toList());
+    }
+
+    private void processNeighbors(Map<Long, List<SalePointCost>> graph, Map<Long, Boolean> visited,
+            Map<Long, Double> costs, Map<Long, Long> previous, PriorityQueue<SalePointCost> queue,
+            SalePointCost current) {
+        Long currentId = current.getId();
+        for (SalePointCost salePointCost : graph.get(currentId)) {
+            if (Boolean.TRUE.equals(visited.get(salePointCost.getId())))
+                continue;
+            Double newCost = current.getCost() + salePointCost.getCost();
+            if (newCost < costs.get(salePointCost.getId())) {
+                previous.put(salePointCost.getId(), currentId);
+                costs.put(salePointCost.getId(), newCost);
+                queue.add(new SalePointCost(salePointCost.getId(), newCost));
+                log.info("New cost for sale point ID {}: {}", salePointCost.getId(), newCost);
+            }
+        }
     }
 
     private void validatePath(NewPath newPath) {

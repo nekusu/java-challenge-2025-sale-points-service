@@ -24,7 +24,7 @@ import com.sharks.sale_points_service.services.impl.SalePointServiceImpl;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
-public class SalePointServiceTest {
+class SalePointServiceTest {
 
     @Mock
     private SalePointRepository salePointRepository;
@@ -36,7 +36,7 @@ public class SalePointServiceTest {
     private NewSalePoint newSalePoint;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         salePoint = new SalePoint();
         salePoint.setName("Test Point");
         ReflectionTestUtils.setField(salePoint, "id", 1L);

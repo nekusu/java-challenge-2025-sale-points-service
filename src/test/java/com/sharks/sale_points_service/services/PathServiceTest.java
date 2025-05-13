@@ -31,7 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PathServiceTest {
+class PathServiceTest {
 
     @Mock
     private PathRepository pathRepository;
@@ -47,7 +47,7 @@ public class PathServiceTest {
     private Path path;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         a = new SalePoint("A");
         ReflectionTestUtils.setField(a, "id", 1L);
         b = new SalePoint("B");
@@ -86,10 +86,10 @@ public class PathServiceTest {
 
     @Test
     void testGetPathByIds_FoundAnyDirection() {
-        Path path = new Path(b, a, 10.0);
+        Path reversePath = new Path(b, a, 10.0);
 
         when(pathRepository.findBySalePointA_IdAndSalePointB_Id(1L, 2L)).thenReturn(Optional.empty());
-        when(pathRepository.findBySalePointA_IdAndSalePointB_Id(2L, 1L)).thenReturn(Optional.of(path));
+        when(pathRepository.findBySalePointA_IdAndSalePointB_Id(2L, 1L)).thenReturn(Optional.of(reversePath));
 
         Path result = pathService.getPathByIds(1L, 2L);
         assertNotNull(result);
@@ -198,11 +198,11 @@ public class PathServiceTest {
 
     @Test
     void testFindCheapestPath_SinglePath() {
-        Path path = new Path(a, b, 5.0);
+        Path testPath = new Path(a, b, 5.0);
 
         when(salePointService.getSalePointById(1L)).thenReturn(a);
         when(salePointService.getSalePointById(2L)).thenReturn(b);
-        when(pathRepository.findBySalePointA_Id(1L)).thenReturn(List.of(path));
+        when(pathRepository.findBySalePointA_Id(1L)).thenReturn(List.of(testPath));
         when(pathRepository.findBySalePointB_Id(1L)).thenReturn(Collections.emptyList());
 
         PathCost result = pathService.findCheapestPath(1L, 2L);

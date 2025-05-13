@@ -23,4 +23,19 @@ public class SalePointCost implements Comparable<SalePointCost> {
     public int compareTo(SalePointCost other) {
         return this.cost.compareTo(other.cost);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        SalePointCost that = (SalePointCost) obj;
+        return this.cost.equals(that.cost);
+    }
+
+    @Override
+    public int hashCode() {
+        return cost.hashCode();
+    }
 }
